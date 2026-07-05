@@ -1,4 +1,4 @@
-'s <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -53,38 +53,33 @@
   .wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; }
 
   /* ---------- HERO ---------- */
-
+  /* 76vh (not 100) so the top of the phone frame peeks above the fold —
+     the peek is the scroll invitation. */
   .hero {
-    min-height: 88vh;
+    min-height: 76vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     text-align: center;
     position: relative;
     padding: 0 24px;
   }
 
-  /* The beam: descends from the top edge of the page, exactly like the launch screen */
   .beam {
     position: absolute;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
     width: 2px;
-    height: 34vh;
+    height: 30vh;
     background: linear-gradient(to bottom,
       rgba(245,245,245,0.0) 0%,
       rgba(245,245,245,0.55) 25%,
       var(--gold) 100%);
   }
 
-  .orb-zone {
-    position: relative;
-    height: 34vh;
-    width: 100%;
-    flex: none;
-  }
+  .orb-zone { position: relative; height: 30vh; width: 100%; flex: none; }
 
   .orb {
     position: absolute;
@@ -106,12 +101,8 @@
     50%      { box-shadow: 0 0 30px 8px rgba(240,179,50,0.70), 0 0 110px 52px rgba(240,179,50,0.24); }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .orb { animation: none; }
-  }
-
   .hero h1 {
-    margin-top: 64px;
+    margin-top: 60px;
     font-size: clamp(52px, 10vw, 84px);
     font-weight: 200;
     letter-spacing: 0.01em;
@@ -125,14 +116,14 @@
   }
 
   .hero-sub {
-    margin-top: 34px;
+    margin-top: 30px;
     max-width: 480px;
     color: var(--ink);
-    font-size: clamp(15px, 4vw, 17px);
+    font-size: 17px;
   }
 
   .coming-soon {
-    margin-top: 42px;
+    margin-top: 36px;
     display: inline-block;
     font-family: var(--mono);
     font-size: 13px;
@@ -142,12 +133,68 @@
     border-radius: 999px;
     padding: 10px 22px;
   }
-  /* When the App Store link is live, replace the span above with :
+  /* When the App Store link is live, replace the span with:
      <a class="coming-soon" href="APP_STORE_URL">Download on the App&nbsp;Store</a> */
+
+  /* Scroll cue: the beam continues downward — a small gold dot descends and fades. */
+  .scroll-cue {
+    margin: 34px auto 8px;
+    width: 2px;
+    height: 46px;
+    position: relative;
+    background: linear-gradient(to bottom, rgba(240,179,50,0.30), rgba(240,179,50,0));
+  }
+  .scroll-cue::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 8px 2px rgba(240,179,50,0.5);
+    animation: cue-descend 2.4s ease-in infinite;
+  }
+  @keyframes cue-descend {
+    0%   { top: 0;    opacity: 0; }
+    18%  { opacity: 1; }
+    75%  { opacity: 0.9; }
+    100% { top: 44px; opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orb { animation: none; }
+    .scroll-cue::after { animation: none; opacity: 0.7; top: 12px; }
+  }
+
+  /* ---------- SCROLL REVEALS ---------- */
+  /* Only active when JS runs (html.js). No JS = everything visible. */
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .js .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+  }
 
   /* ---------- SHARED SECTION RHYTHM ---------- */
 
-  section { padding: 96px 0; }
+  section { padding: 88px 0; }
+
+  /* The beam passing between sections: short, faint, centered segments. */
+  .beam-gap {
+    width: 2px;
+    height: 64px;
+    margin: 0 auto;
+    background: linear-gradient(to bottom,
+      rgba(240,179,50,0),
+      rgba(240,179,50,0.22) 50%,
+      rgba(240,179,50,0));
+  }
 
   .kicker {
     font-family: var(--mono);
@@ -172,7 +219,7 @@
 
   /* ---------- THE PHOTO ---------- */
 
-  .photo-section { text-align: center; padding-top: 40px; }
+  .photo-section { text-align: center; padding-top: 34px; }
 
   .phone-frame {
     display: inline-block;
@@ -194,7 +241,7 @@
   }
 
   .photo-caption {
-    margin-top: 32px;
+    margin-top: 22px;
     font-family: var(--mono);
     font-size: 13px;
     color: var(--muted);
@@ -248,24 +295,49 @@
     font-size: 16px;
     font-weight: 400;
     color: #0a0a0a;
-    background: linear-gradient(100deg, #ffd76e, #f0b332);
+    background: linear-gradient(100deg, #e8c14a, #d98c36);
     border-radius: 14px;
     padding: 14px 34px;
     transition: filter 0.2s ease;
   }
   .mail-btn:hover { filter: brightness(1.08); color: #0a0a0a; }
 
+  /* The finale: the page ends as the app icon — the beam descends
+     to the orb resting above the ridgeline. */
   footer {
     position: relative;
-    padding-top: 40px;
+    padding-top: 130px;
     color: var(--muted);
   }
 
-  .ridges {
-    display: block;
-    width: 100%;
-    height: 160px;
+  .finale-beam {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 196px;
+    background: linear-gradient(to bottom,
+      rgba(245,245,245,0) 0%,
+      rgba(245,245,245,0.45) 40%,
+      var(--gold) 100%);
   }
+
+  .finale-orb {
+    position: absolute;
+    top: 196px;
+    left: 50%;
+    transform: translate(-50%, -6px);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 42% 38%, var(--gold-bright), var(--gold) 55%, var(--gold-deep));
+    box-shadow:
+      0 0 18px 5px rgba(240, 179, 50, 0.5),
+      0 0 60px 26px rgba(240, 179, 50, 0.14);
+  }
+
+  .ridges { display: block; width: 100%; height: 160px; }
 
   .foot-inner {
     background: #000;
@@ -277,6 +349,7 @@
   }
   .foot-inner .sep { margin: 0 10px; color: #3a382f; }
 </style>
+<script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
 
@@ -296,10 +369,12 @@
 
   <!-- Swap this span for the App Store badge link at launch (see CSS comment) -->
   <span class="coming-soon">Coming soon to the App&nbsp;Store</span>
+
+  <div class="scroll-cue" aria-hidden="true"></div>
 </header>
 
 <!-- ================= THE PHOTO ================= -->
-<section class="photo-section">
+<section class="photo-section reveal">
   <div class="wrap">
     <div class="phone-frame">
       <img src="waybeam-hero.jpg"
@@ -309,11 +384,13 @@
   </div>
 </section>
 
+<div class="beam-gap" aria-hidden="true"></div>
+
 <!-- ================= ORIGIN ================= -->
-<section class="prose">
+<section class="prose reveal">
   <div class="wrap">
     <p class="kicker">Why it exists</p>
-    <h2>"Where is my house from here?"</h2>
+    <h2>“Where is my house from here?”</h2>
     <p>
       You know the moment. You're standing somewhere high — a trail, a lookout,
       a rooftop — with a whole city or valley spread out below, and you catch
@@ -326,13 +403,15 @@
       spot, or drop in raw coordinates, and a column of light appears in your
       camera view, planted on the exact bearing — and at the true elevation —
       of the place you're looking for. Not turn-by-turn directions.
-      Just the honest answer to <em>"it's over there."</em>
+      Just the honest answer to <em>“it's over there.”</em>
     </p>
   </div>
 </section>
 
+<div class="beam-gap" aria-hidden="true"></div>
+
 <!-- ================= FEATURES ================= -->
-<section class="features">
+<section class="features reveal">
   <div class="wrap">
     <p class="kicker">What it does</p>
     <ul class="feature-list">
@@ -368,19 +447,24 @@
   </div>
 </section>
 
+<div class="beam-gap" aria-hidden="true"></div>
+
 <!-- ================= CONTACT ================= -->
-<section class="contact">
+<section class="contact reveal">
   <div class="wrap">
     <p class="kicker">Get in touch</p>
     <h2>Questions, ideas, or a valley you pointed across?</h2>
-    <p>WayBeam is built by one person in Los Angeles who wanted to know where his house was. He reads everything.</p>
+    <p>WayBeam is built by one person in Los Angeles, who wanted to know where
+       his house was. He reads everything.</p>
     <!-- PLACEHOLDER EMAIL — swap for your real contact address -->
     <a class="mail-btn" href="mailto:hello@getwaybeam.app">Say hello</a>
   </div>
 </section>
 
-<!-- ================= FOOTER ================= -->
+<!-- ================= FOOTER: the page ends as the icon ================= -->
 <footer>
+  <div class="finale-beam" aria-hidden="true"></div>
+  <div class="finale-orb" aria-hidden="true"></div>
   <svg class="ridges" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
     <path fill="#14131a" d="M0 94.6 L20 95.4 L40 95.9 L60 96.0 L80 95.8 L100 95.2 L120 94.4 L140 93.4 L160 92.2 L180 90.8 L200 89.4 L220 88.0 L240 86.6 L260 85.2 L280 84.0 L300 82.9 L320 82.0 L340 81.3 L360 80.8 L380 80.5 L400 80.3 L420 80.4 L440 80.5 L460 80.8 L480 81.1 L500 81.5 L520 81.8 L540 82.0 L560 82.1 L580 82.1 L600 81.8 L620 81.3 L640 80.5 L660 79.4 L680 78.1 L700 76.5 L720 74.5 L740 72.3 L760 69.9 L780 67.3 L800 64.6 L820 61.7 L840 58.9 L860 56.0 L880 53.2 L900 50.6 L920 48.2 L940 46.0 L960 44.1 L980 42.6 L1000 41.4 L1020 40.6 L1040 40.1 L1060 40.1 L1080 40.5 L1100 41.2 L1120 42.3 L1140 43.7 L1160 45.3 L1180 47.1 L1200 49.1 L1220 51.2 L1240 53.3 L1260 55.4 L1280 57.4 L1300 59.3 L1320 61.1 L1340 62.6 L1360 64.0 L1380 65.2 L1400 66.1 L1420 66.8 L1440 67.3 L1440 160 L0 160 Z"/>
     <path fill="#0a0a0d" d="M0 96.4 L20 96.4 L40 96.4 L60 96.5 L80 96.6 L100 96.6 L120 96.4 L140 96.1 L160 95.6 L180 94.8 L200 93.7 L220 92.3 L240 90.7 L260 88.8 L280 86.6 L300 84.2 L320 81.7 L340 79.0 L360 76.2 L380 73.5 L400 70.8 L420 68.2 L440 65.9 L460 63.8 L480 62.0 L500 60.6 L520 59.6 L540 59.0 L560 58.9 L580 59.3 L600 60.1 L620 61.4 L640 63.1 L660 65.2 L680 67.7 L700 70.4 L720 73.4 L740 76.5 L760 79.7 L780 82.9 L800 86.1 L820 89.1 L840 92.0 L860 94.7 L880 97.0 L900 99.1 L920 100.9 L940 102.4 L960 103.5 L980 104.3 L1000 104.8 L1020 105.1 L1040 105.2 L1060 105.1 L1080 104.9 L1100 104.7 L1120 104.5 L1140 104.3 L1160 104.2 L1180 104.3 L1200 104.5 L1220 105.0 L1240 105.7 L1260 106.7 L1280 107.9 L1300 109.3 L1320 111.0 L1340 112.8 L1360 114.7 L1380 116.7 L1400 118.7 L1420 120.6 L1440 122.4 L1440 160 L0 160 Z"/>
@@ -394,6 +478,24 @@
   </div>
 </footer>
 
+<script>
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+
 </body>
 </html>
- 
