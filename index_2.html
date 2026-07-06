@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WayBeam — See your way there</title>
+<meta name="description" content="WayBeam places a beacon of light in your camera view, marking the direction and distance of a place you can't see. Point at the horizon. See your way there.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="WayBeam — See your way there">
+<meta property="og:description" content="An AR beacon pointing toward the places that matter, anchored in the real world through your camera.">
+<meta property="og:image" content="https://getwaybeam.app/waybeam-hero.jpg">
+<meta property="og:url" content="https://getwaybeam.app">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<style>
+  :root {
+    --bg: #050505;
+    --panel: #0d0d10;
+    --gold: #f0b332;
+    --gold-bright: #ffd76e;
+    --gold-deep: #b06c14;
+    --ink: #f2efe7;
+    --muted: #918c82;
+    --hairline: rgba(240, 179, 50, 0.14);
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--gold); text-decoration: none; }
+  a:hover { color: var(--gold-bright); }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- HERO ---------- */
+  /* 76vh (not 100) so the top of the phone frame peeks above the fold —
+     the peek is the scroll invitation. */
+  .hero {
+    min-height: 76vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    position: relative;
+    padding: 0 24px;
+  }
+
+  .beam {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 30vh;
+    background: linear-gradient(to bottom,
+      rgba(245,245,245,0.0) 0%,
+      rgba(245,245,245,0.55) 25%,
+      var(--gold) 100%);
+  }
+
+  .orb-zone { position: relative; height: 30vh; width: 100%; flex: none; }
+
+  .orb {
+    position: absolute;
+    bottom: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 42% 38%, var(--gold-bright), var(--gold) 55%, var(--gold-deep));
+    box-shadow:
+      0 0 24px 6px rgba(240, 179, 50, 0.55),
+      0 0 90px 40px rgba(240, 179, 50, 0.18);
+    animation: breathe 5s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { box-shadow: 0 0 24px 6px rgba(240,179,50,0.55), 0 0 90px 40px rgba(240,179,50,0.18); }
+    50%      { box-shadow: 0 0 30px 8px rgba(240,179,50,0.70), 0 0 110px 52px rgba(240,179,50,0.24); }
+  }
+
+  .hero h1 {
+    margin-top: 60px;
+    font-size: clamp(52px, 10vw, 84px);
+    font-weight: 200;
+    letter-spacing: 0.01em;
+  }
+
+  .tagline {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: clamp(18px, 3.4vw, 22px);
+    font-weight: 300;
+  }
+
+  .hero-sub {
+    margin-top: 30px;
+    max-width: 480px;
+    color: var(--ink);
+    font-size: 17px;
+  }
+
+  .coming-soon {
+    margin-top: 36px;
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    padding: 10px 22px;
+  }
+  /* When the App Store link is live, replace the span with:
+     <a class="coming-soon" href="APP_STORE_URL">Download on the App&nbsp;Store</a> */
+
+  /* Scroll cue: the beam continues downward — a small gold dot descends and fades. */
+  .scroll-cue {
+    margin: 34px auto 8px;
+    width: 2px;
+    height: 46px;
+    position: relative;
+    background: linear-gradient(to bottom, rgba(240,179,50,0.30), rgba(240,179,50,0));
+  }
+  .scroll-cue::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 8px 2px rgba(240,179,50,0.5);
+    animation: cue-descend 2.4s ease-in infinite;
+  }
+  @keyframes cue-descend {
+    0%   { top: 0;    opacity: 0; }
+    18%  { opacity: 1; }
+    75%  { opacity: 0.9; }
+    100% { top: 44px; opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orb { animation: none; }
+    .scroll-cue::after { animation: none; opacity: 0.7; top: 12px; }
+  }
+
+  /* ---------- SPINE ORB: travels down the page with scroll, lands on the finale ---------- */
+  /* Content sits above it; the orb drifts behind the text. */
+  header, section, footer, .beam-gap { position: relative; z-index: 2; }
+
+  #spine-orb {
+    position: fixed;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, 0);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 42% 38%, var(--gold-bright), var(--gold) 60%, var(--gold-deep));
+    box-shadow: 0 0 14px 4px rgba(240,179,50,0.45), 0 0 40px 16px rgba(240,179,50,0.10);
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+
+  /* Landing pulse on the finale when the traveling orb arrives */
+  .finale-orb { transition: box-shadow 0.6s ease; }
+  footer.landed .finale-orb {
+    box-shadow:
+      0 0 24px 7px rgba(240, 179, 50, 0.65),
+      0 0 80px 34px rgba(240, 179, 50, 0.20);
+  }
+
+  /* Invisible occluders: content columns are solid page-black "signs" —
+     indistinguishable from the background until the orb vanishes behind one. */
+  section .wrap { background: var(--bg); }
+
+  /* ---------- SCROLL REVEALS ---------- */
+  /* Only active when JS runs (html.js). No JS = everything visible. */
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .js .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ---------- SHARED SECTION RHYTHM ---------- */
+
+  section { padding: 88px 0; }
+
+  /* The beam passing between sections: short, faint, centered segments. */
+  .beam-gap {
+    width: 2px;
+    height: 64px;
+    margin: 0 auto;
+    background: linear-gradient(to bottom,
+      rgba(240,179,50,0),
+      rgba(240,179,50,0.22) 50%,
+      rgba(240,179,50,0));
+  }
+
+  .kicker {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 22px;
+  }
+
+  h2 {
+    font-weight: 250;
+    font-size: clamp(28px, 5vw, 36px);
+    line-height: 1.25;
+    margin-bottom: 24px;
+    letter-spacing: 0.005em;
+  }
+
+  p + p { margin-top: 18px; }
+  .prose p { color: #cfcabf; }
+  .prose em { color: var(--ink); font-style: italic; }
+
+  /* ---------- THE PHOTO ---------- */
+
+  .photo-section { text-align: center; padding-top: 34px; }
+
+  .phone-frame {
+    display: inline-block;
+    border-radius: 38px;
+    padding: 10px;
+    background: #121216;
+    border: 1px solid rgba(255,255,255,0.07);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    max-width: min(340px, 78vw);
+  }
+
+  /* SWAPPABLE HERO IMAGE ————————————————————————————————
+     When the magic-hour shot exists, just replace waybeam-hero.jpg
+     (same filename, drop it in the folder) and nothing else changes. */
+  .phone-frame img {
+    display: block;
+    width: 100%;
+    border-radius: 30px;
+  }
+
+  .photo-caption {
+    margin-top: 22px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .photo-caption .gold { color: var(--gold); }
+
+  /* ---------- FEATURES ---------- */
+
+  .features { border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
+
+  .feature-list { list-style: none; margin-top: 8px; }
+
+  .feature-list li {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 20px;
+    padding: 26px 0;
+  }
+  .feature-list li + li { border-top: 1px solid rgba(255,255,255,0.05); }
+
+  .feature-key {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    padding-top: 3px;
+  }
+
+  .feature-body strong {
+    display: block;
+    font-weight: 450;
+    margin-bottom: 4px;
+    letter-spacing: 0.01em;
+  }
+  .feature-body span { color: var(--muted); font-size: 15.5px; }
+
+  @media (max-width: 480px) {
+    .feature-list li { grid-template-columns: 1fr; gap: 6px; }
+  }
+
+  /* The home screen: secondary, smaller — quiet proof the app is real. */
+  .home-shot { text-align: center; margin-top: 64px; }
+  .phone-frame-small {
+    max-width: min(220px, 60vw);
+    border-radius: 30px;
+    padding: 7px;
+  }
+  .phone-frame-small img { border-radius: 24px; }
+
+  /* ---------- CONTACT / FOOTER ---------- */
+
+  .contact { text-align: center; }
+
+  .contact p { color: var(--muted); max-width: 440px; margin-left: auto; margin-right: auto; }
+
+  .mail-btn {
+    display: inline-block;
+    margin-top: 30px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #0a0a0a;
+    background: linear-gradient(100deg, #e8c14a, #d98c36);
+    border-radius: 14px;
+    padding: 14px 34px;
+    transition: filter 0.2s ease;
+  }
+  .mail-btn:hover { filter: brightness(1.08); color: #0a0a0a; }
+
+  /* The finale: the page ends as the app icon — the beam descends
+     to the orb resting above the ridgeline. */
+  footer {
+    position: relative;
+    padding-top: 130px;
+    color: var(--muted);
+  }
+
+  .finale-beam {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    transform-origin: bottom center;
+    width: 2px;
+    height: 196px;
+    background: linear-gradient(to bottom,
+      rgba(245,245,245,0) 0%,
+      rgba(245,245,245,0.45) 40%,
+      var(--gold) 100%);
+  }
+
+  /* Ignition: when the spine effect is running, the beam starts collapsed
+     at the orb and extends upward — lightsaber-style — on landing. */
+  html.js-spine .finale-beam {
+    transform: translateX(-50%) scaleY(0);
+    transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  html.js-spine footer.landed .finale-beam {
+    transform: translateX(-50%) scaleY(1);
+  }
+
+  .finale-orb {
+    position: absolute;
+    top: 196px;
+    left: 50%;
+    transform: translate(-50%, -6px);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 42% 38%, var(--gold-bright), var(--gold) 55%, var(--gold-deep));
+    box-shadow:
+      0 0 18px 5px rgba(240, 179, 50, 0.5),
+      0 0 60px 26px rgba(240, 179, 50, 0.14);
+  }
+
+  .ridges { display: block; width: 100%; height: 160px; }
+
+  .foot-inner {
+    background: #000;
+    text-align: center;
+    padding: 0 24px 42px;
+    font-size: 13px;
+    font-family: var(--mono);
+    letter-spacing: 0.04em;
+  }
+  .foot-inner .sep { margin: 0 10px; color: #3a382f; }
+</style>
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="beam" aria-hidden="true"></div>
+  <div class="orb-zone" aria-hidden="true"><div class="orb"></div></div>
+
+  <h1>WayBeam</h1>
+  <p class="tagline">See your way there.</p>
+
+  <p class="hero-sub">
+    Point your camera at the horizon, and a beacon of light marks the direction
+    and distance of a place you can't see — anchored in the real world,
+    at the real height of the land.
+  </p>
+
+  <!-- Swap this span for the App Store badge link at launch (see CSS comment) -->
+  <span class="coming-soon">Coming soon to the App&nbsp;Store</span>
+
+  <div class="scroll-cue" aria-hidden="true"></div>
+</header>
+
+<!-- ================= THE PHOTO ================= -->
+<section class="photo-section reveal">
+  <div class="wrap">
+    <div class="phone-frame">
+      <img src="waybeam-hero.jpg"
+           alt="WayBeam's AR view: a column of light beside the midday sun, descending to a gold beacon over a Los Angeles valley, marked 347 Isabel St, 0.8 miles away.">
+    </div>
+    <p class="photo-caption">WayBeam <span class="gold">·</span> 347 Isabel St <span class="gold">·</span> 0.8 mi</p>
+  </div>
+</section>
+
+<div class="beam-gap" aria-hidden="true"></div>
+
+<!-- ================= ORIGIN ================= -->
+<section class="prose reveal">
+  <div class="wrap">
+    <p class="kicker">Why it exists</p>
+    <h2>“Where is my house from here?”</h2>
+    <p>
+      You know the moment. You're standing somewhere high — a trail, a lookout,
+      a rooftop — with a whole city or valley spread out below, and you catch
+      yourself searching the landscape for one particular spot. Home. A friend's
+      place across the valley, hidden behind the trees. The feeling that
+      <em>if you both had flashlights, you might just find each other.</em>
+    </p>
+    <p>
+      WayBeam is that flashlight. Type an address, pick a contact, choose a saved
+      spot, or drop in raw coordinates, and a column of light appears in your
+      camera view, planted on the exact bearing — and at the true elevation —
+      of the place you're looking for. Not turn-by-turn directions.
+      Just the honest answer to <em>“it's over there.”</em>
+    </p>
+  </div>
+</section>
+
+<div class="beam-gap" aria-hidden="true"></div>
+
+<!-- ================= FEATURES ================= -->
+<section class="features reveal">
+  <div class="wrap">
+    <p class="kicker">What it does</p>
+    <ul class="feature-list">
+      <li>
+        <span class="feature-key">beacon</span>
+        <div class="feature-body">
+          <strong>A beam anchored in the world</strong>
+          <span>Hold steady for a moment and the beacon locks into place in 3D space — stable, not jittery, pointed exactly where it should be.</span>
+        </div>
+      </li>
+      <li>
+        <span class="feature-key">terrain</span>
+        <div class="feature-body">
+          <strong>True-to-the-land elevation</strong>
+          <span>WayBeam pulls real elevation data, so a spot down in the valley reads as down in the valley. Looking down actually feels like looking down.</span>
+        </div>
+      </li>
+      <li>
+        <span class="feature-key">offline</span>
+        <div class="feature-body">
+          <strong>Works where signal doesn't</strong>
+          <span>Saved places keep their coordinates and terrain height on your phone — beam home from a ridgeline with zero bars.</span>
+        </div>
+      </li>
+      <li>
+        <span class="feature-key">capture</span>
+        <div class="feature-body">
+          <strong>Photos worth sending</strong>
+          <span>Snap the view, beam and all, with a subtle watermark — the name and distance included, or kept private. Your call.</span>
+        </div>
+      </li>
+    </ul>
+
+    <div class="home-shot">
+      <div class="phone-frame phone-frame-small">
+        <img src="waybeam-home.jpg"
+             alt="WayBeam's home screen: a glowing gold beacon above the wordmark, and an input field reading 'Address, contact, or coordinates…'">
+      </div>
+      <p class="photo-caption">The whole interface <span class="gold">·</span> address, contact, or coordinates</p>
+    </div>
+  </div>
+</section>
+
+<div class="beam-gap" aria-hidden="true"></div>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact reveal">
+  <div class="wrap">
+    <p class="kicker">Get in touch</p>
+    <h2>Questions, ideas, or a valley you pointed across?</h2>
+    <p>WayBeam is built by one person in Los Angeles, who wanted to know where
+       his house was. He reads everything.</p>
+    <!-- PLACEHOLDER EMAIL — swap for your real contact address -->
+    <a class="mail-btn" href="mailto:hello@getwaybeam.app">Say hello</a>
+  </div>
+</section>
+
+<!-- ================= FOOTER: the page ends as the icon ================= -->
+<footer>
+  <div class="finale-beam" aria-hidden="true"></div>
+  <div class="finale-orb" aria-hidden="true"></div>
+  <svg class="ridges" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
+    <path fill="#14131a" d="M0 94.6 L20 95.4 L40 95.9 L60 96.0 L80 95.8 L100 95.2 L120 94.4 L140 93.4 L160 92.2 L180 90.8 L200 89.4 L220 88.0 L240 86.6 L260 85.2 L280 84.0 L300 82.9 L320 82.0 L340 81.3 L360 80.8 L380 80.5 L400 80.3 L420 80.4 L440 80.5 L460 80.8 L480 81.1 L500 81.5 L520 81.8 L540 82.0 L560 82.1 L580 82.1 L600 81.8 L620 81.3 L640 80.5 L660 79.4 L680 78.1 L700 76.5 L720 74.5 L740 72.3 L760 69.9 L780 67.3 L800 64.6 L820 61.7 L840 58.9 L860 56.0 L880 53.2 L900 50.6 L920 48.2 L940 46.0 L960 44.1 L980 42.6 L1000 41.4 L1020 40.6 L1040 40.1 L1060 40.1 L1080 40.5 L1100 41.2 L1120 42.3 L1140 43.7 L1160 45.3 L1180 47.1 L1200 49.1 L1220 51.2 L1240 53.3 L1260 55.4 L1280 57.4 L1300 59.3 L1320 61.1 L1340 62.6 L1360 64.0 L1380 65.2 L1400 66.1 L1420 66.8 L1440 67.3 L1440 160 L0 160 Z"/>
+    <path fill="#0a0a0d" d="M0 96.4 L20 96.4 L40 96.4 L60 96.5 L80 96.6 L100 96.6 L120 96.4 L140 96.1 L160 95.6 L180 94.8 L200 93.7 L220 92.3 L240 90.7 L260 88.8 L280 86.6 L300 84.2 L320 81.7 L340 79.0 L360 76.2 L380 73.5 L400 70.8 L420 68.2 L440 65.9 L460 63.8 L480 62.0 L500 60.6 L520 59.6 L540 59.0 L560 58.9 L580 59.3 L600 60.1 L620 61.4 L640 63.1 L660 65.2 L680 67.7 L700 70.4 L720 73.4 L740 76.5 L760 79.7 L780 82.9 L800 86.1 L820 89.1 L840 92.0 L860 94.7 L880 97.0 L900 99.1 L920 100.9 L940 102.4 L960 103.5 L980 104.3 L1000 104.8 L1020 105.1 L1040 105.2 L1060 105.1 L1080 104.9 L1100 104.7 L1120 104.5 L1140 104.3 L1160 104.2 L1180 104.3 L1200 104.5 L1220 105.0 L1240 105.7 L1260 106.7 L1280 107.9 L1300 109.3 L1320 111.0 L1340 112.8 L1360 114.7 L1380 116.7 L1400 118.7 L1420 120.6 L1440 122.4 L1440 160 L0 160 Z"/>
+  </svg>
+  <div class="foot-inner">
+    <span>© 2026 WayBeam</span>
+    <span class="sep">·</span>
+    <span>getwaybeam.app</span>
+    <span class="sep">·</span>
+    <a href="mailto:hello@getwaybeam.app">contact</a>
+  </div>
+</footer>
+
+<div id="spine-orb" aria-hidden="true"></div>
+
+<script>
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+
+  /* Spine orb: rides scroll progress down the viewport, behind the content,
+     and lands exactly on the footer's finale orb. */
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var orb = document.getElementById('spine-orb');
+    var finale = document.querySelector('.finale-orb');
+    var foot = document.querySelector('footer');
+    if (!orb || !finale || !foot) return;
+    document.documentElement.classList.add('js-spine');
+
+    var startY, endY, maxScroll, ticking = false;
+
+    function measure() {
+      var vh = window.innerHeight;
+      maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
+      startY = vh * 0.60; // begins just below the hero's scroll cue
+      // Where the finale orb sits in the viewport when fully scrolled:
+      var rect = finale.getBoundingClientRect();
+      endY = rect.top + window.scrollY - maxScroll;
+    }
+
+    function ease(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2; }
+
+    function update() {
+      ticking = false;
+      var p = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+      // Fade in once scrolling begins; hand off to the finale at the end.
+      var o;
+      if (p < 0.03) o = 0;
+      else if (p < 0.10) o = (p - 0.03) / 0.07;
+      else if (p > 0.985) o = Math.max(0, (1 - p) / 0.015);
+      else o = 1;
+      var y = startY + (endY - startY) * ease(p);
+      orb.style.opacity = o.toFixed(3);
+      orb.style.transform = 'translate(-50%, ' + y.toFixed(1) + 'px)';
+      // Ignite only once the orb has fully arrived; release well below
+      // the threshold so it can't flicker at the boundary.
+      if (p >= 0.995) foot.classList.add('landed');
+      else if (p < 0.95) foot.classList.remove('landed');
+    }
+
+    function onScroll() {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }
+
+    measure();
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', function () { measure(); update(); }, { passive: true });
+    window.addEventListener('load', function () { measure(); update(); });
+  })();
+</script>
+
+</body>
+</html>
