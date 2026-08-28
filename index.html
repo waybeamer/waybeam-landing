@@ -53,10 +53,11 @@
   .wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; }
 
   /* ---------- HERO ---------- */
-  /* 76vh (not 100) so the top of the phone frame peeks above the fold —
-     the peek is the scroll invitation. */
+  /* Compressed so the phone screenshot's top edge is visible without
+     scrolling on a typical phone/laptop viewport — the beam/orb/wordmark
+     composition is kept intact, just tightened. */
   .hero {
-    min-height: 76vh;
+    min-height: 64vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -72,14 +73,14 @@
     left: 50%;
     transform: translateX(-50%);
     width: 2px;
-    height: 30vh;
+    height: 32vh;
     background: linear-gradient(to bottom,
       rgba(245,245,245,0.0) 0%,
       rgba(245,245,245,0.55) 25%,
       var(--gold) 100%);
   }
 
-  .orb-zone { position: relative; height: 30vh; width: 100%; flex: none; }
+  .orb-zone { position: relative; height: 32vh; width: 100%; flex: none; }
 
   .orb {
     position: absolute;
@@ -102,28 +103,28 @@
   }
 
   .hero h1 {
-    margin-top: 60px;
-    font-size: clamp(52px, 10vw, 84px);
+    margin-top: 22px;
+    font-size: clamp(44px, 8vw, 72px);
     font-weight: 200;
     letter-spacing: 0.01em;
   }
 
   .tagline {
-    margin-top: 10px;
+    margin-top: 8px;
     color: var(--muted);
-    font-size: clamp(18px, 3.4vw, 22px);
+    font-size: clamp(17px, 3vw, 20px);
     font-weight: 300;
   }
 
   .hero-sub {
-    margin-top: 30px;
+    margin-top: 18px;
     max-width: 480px;
     color: var(--ink);
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .coming-soon {
-    margin-top: 36px;
+    margin-top: 22px;
     display: inline-block;
     font-family: var(--mono);
     font-size: 13px;
@@ -136,11 +137,30 @@
   /* When the App Store link is live, replace the span with:
      <a class="coming-soon" href="APP_STORE_URL">Download on the App&nbsp;Store</a> */
 
+  .price-line {
+    margin-top: 22px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+  }
+
+  .privacy-line {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+    border-bottom: 1px solid transparent;
+  }
+  .privacy-line:hover { color: var(--gold-bright); border-bottom-color: rgba(240,179,50,0.3); }
+
   /* Scroll cue: the beam continues downward — a small gold dot descends and fades. */
   .scroll-cue {
-    margin: 34px auto 8px;
+    margin: 20px auto 4px;
     width: 2px;
-    height: 46px;
+    height: 30px;
     position: relative;
     background: linear-gradient(to bottom, rgba(240,179,50,0.30), rgba(240,179,50,0));
   }
@@ -161,7 +181,7 @@
     0%   { top: 0;    opacity: 0; }
     18%  { opacity: 1; }
     75%  { opacity: 0.9; }
-    100% { top: 44px; opacity: 0; }
+    100% { top: 28px; opacity: 0; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -251,7 +271,11 @@
 
   /* ---------- THE PHOTO ---------- */
 
-  .photo-section { text-align: center; padding-top: 34px; }
+  .photo-section { text-align: center; padding-top: 6px; padding-bottom: 56px; }
+
+  /* Nudged right so the beam in the screenshot lines up with the top beam
+     and the traveling scroll orb, which both sit dead-center on the page. */
+  .photo-section .phone-frame { transform: translateX(5px); }
 
   .phone-frame {
     display: inline-block;
@@ -310,6 +334,29 @@
     letter-spacing: 0.01em;
   }
   .feature-body span { color: var(--muted); font-size: 15.5px; }
+
+  /* First two are the differentiators — give them more presence */
+  .feature-list li:nth-child(1) .feature-key,
+  .feature-list li:nth-child(2) .feature-key { font-size: 14px; }
+  .feature-list li:nth-child(1) .feature-body strong,
+  .feature-list li:nth-child(2) .feature-body strong { font-size: 19px; font-weight: 500; }
+  .feature-list li:nth-child(1) .feature-body span,
+  .feature-list li:nth-child(2) .feature-body span { font-size: 16px; }
+
+  /* Offline + capture are supporting features — quieter */
+  .feature-list li:nth-child(3),
+  .feature-list li:nth-child(4) { padding: 20px 0; }
+  .feature-list li:nth-child(3) .feature-key,
+  .feature-list li:nth-child(4) .feature-key { color: var(--muted); }
+  .feature-list li:nth-child(3) .feature-body strong,
+  .feature-list li:nth-child(4) .feature-body strong { font-weight: 400; font-size: 15px; }
+  .feature-list li:nth-child(3) .feature-body span,
+  .feature-list li:nth-child(4) .feature-body span { font-size: 14px; }
+
+  /* Lit by the traveling spine orb as it passes */
+  .feature-key, .feature-body strong { transition: color 0.4s ease, text-shadow 0.4s ease; }
+  .feature-list li.lit .feature-key { color: var(--gold-bright); text-shadow: 0 0 10px rgba(240,179,50,0.5); }
+  .feature-list li.lit .feature-body strong { color: var(--gold-bright); }
 
   @media (max-width: 480px) {
     .feature-list li { grid-template-columns: 1fr; gap: 6px; }
@@ -420,7 +467,11 @@
   </p>
 
   <!-- Swap this span for the App Store badge link at launch (see CSS comment) -->
-  <span class="coming-soon">Coming soon to the App&nbsp;Store</span>
+  <span class="coming-soon">Coming Fall 2026 to the App&nbsp;Store</span>
+
+  <p class="price-line">One-time purchase <span class="gold" style="color:var(--gold)">·</span> no subscription</p>
+
+  <a class="privacy-line" href="privacy.html">No account · no ads · saved places stay on your phone</a>
 
   <div class="scroll-cue" aria-hidden="true"></div>
 </header>
@@ -535,6 +586,8 @@
     <span>getwaybeam.app</span>
     <span class="sep">·</span>
     <a href="mailto:hello@getwaybeam.app">contact</a>
+    <span class="sep">·</span>
+    <a href="privacy.html">privacy</a>
   </div>
 </footer>
 
@@ -569,6 +622,7 @@
     document.documentElement.classList.add('js-spine');
 
     var startY, endY, maxScroll, ticking = false;
+    var featureLis = document.querySelectorAll('.feature-list li');
 
     function measure() {
       var vh = window.innerHeight;
@@ -593,6 +647,10 @@
       var y = startY + (endY - startY) * ease(p);
       orb.style.opacity = o.toFixed(3);
       orb.style.transform = 'translate(-50%, ' + y.toFixed(1) + 'px)';
+      featureLis.forEach(function (li) {
+        var r = li.getBoundingClientRect();
+        li.classList.toggle('lit', o > 0.3 && y > r.top - 10 && y < r.bottom + 10);
+      });
       // Ignite only once the orb has fully arrived; release well below
       // the threshold so it can't flicker at the boundary.
       if (p >= 0.995) foot.classList.add('landed');
